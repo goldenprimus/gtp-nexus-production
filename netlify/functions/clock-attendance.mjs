@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 import { json, readBody, requireUser, service } from './_auth.mjs';
 
-export default async (event) => {
+export const handler = async (event) => {
   if (event.httpMethod !== 'POST') return json(405,{error:'Method not allowed.'});
   try {
     const { profile: scannerProfile } = await requireUser(event); const { qrValue } = readBody(event); const parts=String(qrValue || '').split('|');

@@ -1,7 +1,7 @@
 import crypto from 'node:crypto';
 import { json, onlyAdmin, readBody, requireUser, service } from './_auth.mjs';
 
-export default async (event) => {
+export const handler = async (event) => {
   if (event.httpMethod !== 'POST') return json(405,{error:'Method not allowed.'});
   try {
     const { profile } = await requireUser(event); onlyAdmin(profile); const { staffId } = readBody(event);

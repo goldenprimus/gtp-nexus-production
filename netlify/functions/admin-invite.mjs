@@ -1,7 +1,7 @@
 import { json, onlyAdmin, readBody, requireUser, service } from './_auth.mjs';
 
 const roles = new Set(['staff','manager','attendance_kiosk','admin']);
-export default async (event) => {
+export const handler = async (event) => {
   if (event.httpMethod !== 'POST') return json(405,{error:'Method not allowed.'});
   try {
     const { profile: caller } = await requireUser(event); onlyAdmin(caller);

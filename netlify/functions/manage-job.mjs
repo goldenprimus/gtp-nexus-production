@@ -7,7 +7,7 @@ function managerRequired(profile) {
   if (!['admin','manager'].includes(profile.role)) throw Object.assign(new Error('Project Manager or Administrator access required.'),{status:403});
 }
 
-export default async (event) => {
+export const handler = async (event) => {
   if(event.httpMethod !== 'POST') return json(405,{error:'Method not allowed.'});
   try {
     const { profile } = await requireUser(event); managerRequired(profile); const body=readBody(event); const client=service();
