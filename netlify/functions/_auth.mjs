@@ -13,7 +13,9 @@ export async function requireUser(event) {
   const { data, error } = await client.auth.getUser(token);
   if (error || !data.user) throw Object.assign(new Error('Session expired. Sign in again.'),{status:401});
   const { data: profile, error: profileError } = await service().from('profiles').select('*').eq('id',data.user.id).single();
-  if (profileError || !profile || profile.status !== 'active') throw Object.assign(new Error('This account is not active.'),{status:403});
+  if (profileError) throw Object.assign(new Error(`Server could not read your staff profile: ${profileError.message}`),{status:500});
+  if (!profile) throw Object.assign(new Error('Your signed-in account has no staff profile. Contact the system administrator.'),{status:403});
+  if (profile.status !== 'active') throw Object.assign(new Error('Your staff account is not active. Contact the system administrator.'),{status:403});
   return { user:data.user, profile };
 }
 export function onlyAdmin(profile) { if (profile.role !== 'admin') throw Object.assign(new Error('Administrator access required.'),{status:403}); }
