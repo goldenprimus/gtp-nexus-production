@@ -1,5 +1,6 @@
 # Local Netlify folder
 .netlify
+.vercel
 
 # Downloaded packages are reinstalled automatically during a Netlify build.
 node_modules/
