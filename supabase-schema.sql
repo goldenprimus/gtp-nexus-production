@@ -81,6 +81,9 @@ alter table public.staff_documents enable row level security;
 -- Browser access: users never read raw badge hashes or write attendance directly.
 revoke all on table public.profiles, public.staff_badges, public.attendance, public.staff_documents from anon, authenticated;
 grant select on table public.profiles, public.attendance, public.staff_documents to authenticated;
+-- The service role is used only by the protected Vercel/Netlify functions.
+grant usage on schema public to service_role;
+grant select, insert, update, delete on table public.profiles, public.staff_badges, public.attendance, public.staff_documents to service_role;
 create policy "staff view own profile or admin directory" on public.profiles for select using (id = auth.uid() or public.is_gtp_admin());
 create policy "admins manage profile records" on public.profiles for all using (public.is_gtp_admin()) with check (public.is_gtp_admin());
 create policy "staff view own attendance" on public.attendance for select using (staff_id = auth.uid() or public.can_run_attendance_kiosk());

@@ -107,6 +107,8 @@ alter table public.procurement_items enable row level security;
 alter table public.quality_records enable row level security;
 revoke all on table public.service_lines,public.jobs,public.job_assignments,public.job_updates,public.procurement_items,public.quality_records from anon,authenticated;
 grant select on table public.service_lines,public.jobs,public.job_assignments,public.job_updates,public.procurement_items,public.quality_records to authenticated;
+grant usage on schema public to service_role;
+grant select, insert, update, delete on table public.service_lines,public.jobs,public.job_assignments,public.job_updates,public.procurement_items,public.quality_records to service_role;
 
 create policy "authenticated staff view service lines" on public.service_lines for select using (auth.uid() is not null);
 create policy "operations managers view all jobs" on public.jobs for select using (public.can_manage_operations() or public.is_assigned_to_job(id));
