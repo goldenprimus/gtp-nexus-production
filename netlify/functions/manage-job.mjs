@@ -27,6 +27,18 @@ export const handler = async (event) => {
       const {error:updateError}=await client.from('job_updates').insert({job_id:jobId,message,progress,status,created_by:profile.id}); if(updateError) throw updateError;
       return json(200,{message:'Job updated.'});
     }
+    if(body.action === 'addProcurement') {
+      const jobId=clean(body.jobId,80), itemName=clean(body.itemName,180), quantity=clean(body.quantity,120), supplier=clean(body.supplier,180), status=clean(body.status,40)||'requested';
+      if(!jobId||!itemName||!['requested','sourcing','ordered','received','delayed'].includes(status)) return json(400,{error:'Provide a job, material name and valid procurement status.'});
+      const {error}=await client.from('procurement_items').insert({job_id:jobId,item_name:itemName,quantity,supplier,status,created_by:profile.id}); if(error) throw error;
+      return json(201,{message:'Procurement item added.'});
+    }
+    if(body.action === 'addQuality') {
+      const jobId=clean(body.jobId,80), recordName=clean(body.recordName,180), status=clean(body.status,40)||'open', inspectionDate=body.inspectionDate||null;
+      if(!jobId||!recordName||!['open','accepted','rejected','on_hold'].includes(status)) return json(400,{error:'Provide a job, record name and valid QA/QC status.'});
+      const {error}=await client.from('quality_records').insert({job_id:jobId,record_name:recordName,status,inspection_date:inspectionDate,created_by:profile.id}); if(error) throw error;
+      return json(201,{message:'QA/QC record added.'});
+    }
     return json(400,{error:'Unsupported job action.'});
   } catch(error) { return json(error.status || 500,{error:error.message || 'Unable to manage job.'}); }
 };
